@@ -1,11 +1,14 @@
 import Phaser from 'phaser';
 import logoImg from './assets/logo.png';
+import Managers  from './Managers/';
 
 class MyGame extends Phaser.Scene
 {
     constructor ()
     {
         super();
+        this.keyManager = new Managers.KeyManager(game);
+        this.keyManager.setState();
     }
 
     preload ()
@@ -25,6 +28,7 @@ class MyGame extends Phaser.Scene
             yoyo: true,
             loop: -1
         });
+
     }
 }
 
