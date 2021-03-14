@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
-import logoImg from './assets/logo.png';
 import Managers  from './Managers/';
+import Containers  from './Containers/';
+import Models  from './Models/';
+import {STATE_LOADING}  from './Config/States.js';
 
 class MyGame extends Phaser.Scene
 {
@@ -8,27 +10,48 @@ class MyGame extends Phaser.Scene
     {
         super();
         this.keyManager = new Managers.KeyManager(game);
-        this.keyManager.setState();
+        this.keyManager.setState(STATE_LOADING);
+        this.containers = {
+            Arena: new Containers.Arena(this, 0, 0),
+            Character: new Models.Character(this, 0, 0)
+        };
     }
 
     preload ()
     {
-        this.load.image('logo', logoImg);
+        this.keyManager.setState(STATE_LOADING);
+        this.containers.Character.load();
     }
       
     create ()
     {
-        const logo = this.add.image(400, 150, 'logo');
-      
-        this.tweens.add({
-            targets: logo,
-            y: 450,
-            duration: 2000,
-            ease: "Power2",
-            yoyo: true,
-            loop: -1
+        /**
+         * Register all Keyboard Events
+         */
+        this.containers.Arena.create();
+        this.containers.Arena.addElement(this.containers.Character.getModel());
+        this.containers.Arena.setPosition(100, 100);
+        //this.containers.Arena.addElement(this.containers.Character.getModel());
+        this.input.keyboard.on('keyup', (event) =>  {
+            //console.dir(event);
+            if (this.keyManager.checkButtonByState(event.keyCode)) {
+                dispatchActions();
+                console.log("Key register");
+            } else {
+                console.log("Wrong Key:", event.keyCode);
+            }
         });
+    }
 
+    update()
+    {
+        this.containers.Arena.update();
+        this.containers.Character.update();
+    }
+
+    dispatchActions()
+    {
+        
     }
 }
 

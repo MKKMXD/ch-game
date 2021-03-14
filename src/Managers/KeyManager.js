@@ -1,17 +1,32 @@
-
+import {STATE_LOADING}  from '../Config/States.js';
 export default class KeyManager
 {
     constructor (parent)
     {
         this.parent = parent
-        this.upKey = parent.input.keyboard.addKey(Phaser.Keyboard.UP);
-        this.downKey = parent.input.keyboard.addKey(Phaser.Keyboard.DOWN);
-        this.leftKey = parent.input.keyboard.addKey(Phaser.Keyboard.LEFT);
-        this.rightKey = parent.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+        this.state = STATE_LOADING;
+        this.stateStatus = {
+            [STATE_LOADING]: {
+                49: false,
+                50: false,
+                51: false,
+                52: false,
+                13: true
+            }
+        }
     }
 
-    setState() 
+    setState(state) 
     {
-        console.log(this.parent);
+        this.state = state;
+    }
+
+    checkButtonByState(keyCode) {
+        console.log(keyCode);
+        if (this.stateStatus[this.state]) {
+            return this.stateStatus[this.state][keyCode];
+        }
+
+        return false;
     }
 }
