@@ -5,6 +5,8 @@ export default class Character
         this.scene = scene;
         this.name = "character";
         this.model = null;
+        this.hp = 100;
+        this.statusAlive = true;
     }
 
     load()
@@ -26,11 +28,22 @@ export default class Character
 
     update()
     {
-        let randX = -1 - 0.5 + Math.random() * (1 - (-1) + 1);
-        let newX = Math.round(randX);
-        let randY = -1 - 0.5 + Math.random() * (1 - (-1) + 1);
-        let newY = Math.round(randY);
-        this.model.x += newX;
-        this.model.y += newY;
+        let newX = Math.round(100);
+        let newY = Math.round(100);
+        this.model.x = newX;
+        this.model.y = newY;
+    }
+
+    attack() 
+    {
+        return 1;
+    }
+
+    getDamage(damage)
+    {
+        hp -= damage;
+        if (hp <= 0) {
+            this.statusAlive = false;
+        }
     }
 }
