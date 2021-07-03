@@ -10,17 +10,36 @@ class MyGame extends Phaser.Scene
     {
         super();
         this.keyManager = new Managers.KeyManager(game);
+        this.fightManager = new Managers.FightManager(game);
         this.keyManager.setState(STATE_LOADING);
         this.containers = {
             Arena: new Containers.Arena(this, 0, 0),
-            Character: new Models.Character(this, 0, 0)
+            Characters: [
+                new Models.Character(this, 0, 0, 'tank'),
+                new Models.Character(this, 0, 0, 'mage'),
+                new Models.Character(this, 0, 0, 'killer')
+            ],
+            Enemies: [
+
+            ]
         };
+
+        this.createEnemy();
+        
+        this.counter = 0;
+        this.startTime = new Date().getTime();
     }
 
     preload ()
     {
         this.keyManager.setState(STATE_LOADING);
-        this.containers.Character.load();
+        for (const iterator of this.containers.Characters) {
+            iterator.load();
+        }
+
+        for (const iterator of this.containers.Enemies) {
+            iterator.load();
+        }
     }
       
     create ()
@@ -29,16 +48,31 @@ class MyGame extends Phaser.Scene
          * Register all Keyboard Events
          */
         this.containers.Arena.create();
-        this.containers.Arena.addElement(this.containers.Character.getModel());
-        this.containers.Arena.setPosition(100, 100);
-        //this.containers.Arena.addElement(this.containers.Character.getModel());
+
+        let moveY = 50;
+        for (const iterator of this.containers.Characters) {
+            this.containers.Arena.addElement(iterator.getModel());
+            this.fightManager.addToGroup(iterator, "my_team");
+            iterator.setPosition(700, moveY);
+            moveY += 50;
+        }
+
+        moveY = 50;
+        for (const iterator of this.containers.Enemies) {
+            this.containers.Arena.addElement(iterator.getModel());
+            this.fightManager.addToGroup(iterator, "enemy_team");
+            iterator.setPosition(400, moveY);
+            moveY += 50;
+        }
+
         this.input.keyboard.on('keyup', (event) =>  {
             //console.dir(event);
             if (this.keyManager.checkButtonByState(event.keyCode)) {
-                dispatchActions();
+                this.dispatchActions();
                 console.log("Key register");
             } else {
                 console.log("Wrong Key:", event.keyCode);
+                this.fightManager.toogleFight();
             }
         });
     }
@@ -46,12 +80,33 @@ class MyGame extends Phaser.Scene
     update()
     {
         this.containers.Arena.update();
-        this.containers.Character.update();
+        for (const iterator of this.containers.Characters) {
+            iterator.update();
+        }
+
+        this.counter++
+        
+        let currentTime = new Date().getTime();
+        if ( (currentTime -  this.startTime)/1000 > 1 ) {
+            console.log("FPS", this.counter);
+            this.startTime =  new Date().getTime();
+            this.counter = 0;
+        }
+    }
+
+    createEnemy()
+    {
+        for (let i = 0; i < 5; i++) {
+            let enemy_character = new Models.Character(this, 0, 0, 'tank');
+            enemy_character.setName(i.toString() + '_tank');
+            this.containers.Enemies.push(enemy_character);
+        }
     }
 
     dispatchActions()
     {
-        
+        this.fightManager.startFight();
+        this.fightManager.fight();
     }
 }
 
