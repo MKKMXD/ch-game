@@ -34,6 +34,7 @@ class MyGame extends Phaser.Scene
     {
         this.keyManager.setState(STATE_LOADING);
         for (const iterator of this.containers.Characters) {
+            console.log(iterator.getUid());
             iterator.load();
         }
 

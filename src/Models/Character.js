@@ -8,6 +8,7 @@ export default class Character
         this.hp = 100;
         this.statusAlive = true;
         this.modelFile = '';
+        this.spells = [];
         switch (type) {
             case 'tank': 
                 this.modelFile = 'src/assets/Models/Characters/Tank.png';
@@ -22,6 +23,7 @@ export default class Character
                 this.modelFile = 'src/assets/Models/Characters/Character.png';
         }
         this.name = this.name + "_" + type;
+        this.uid = this.generateUUID();
     }
     
     setName(name)
@@ -73,5 +75,27 @@ export default class Character
         if (this.hp <= 0) {
             this.statusAlive = false;
         }
+    }
+    
+    addSpells = (spell) => {
+        this.spells.push(spell);
+    }
+
+    getActiveSpells = () => {
+        return this.spells;
+    }
+
+    getUid = () => {
+        return this.uid
+    }
+
+    generateUUID() {
+        var dt = new Date().getTime();
+        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = (dt + Math.random()*16)%16 | 0;
+            dt = Math.floor(dt/16);
+            return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+        });
+        return uuid;
     }
 }
