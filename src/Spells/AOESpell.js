@@ -2,7 +2,7 @@
 import {SPELLS} from './Spell';
 import Spell from './Spell';
 
-export default AOESpell extends Spell 
+export default class AOESpell extends Spell 
 {
     constructor() {
         super();

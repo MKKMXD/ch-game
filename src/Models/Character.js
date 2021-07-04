@@ -42,6 +42,13 @@ export default class Character
         this.model.y = y;
     }
 
+    getPosition()
+    {
+        let x = this.model.x;
+        let y = this.model.y;
+        return {x, y};
+    }
+
     getModel()
     {
         this.model = this.scene.add.sprite(0, 0, this.name);
@@ -68,7 +75,11 @@ export default class Character
         return attack;
     }
 
-    getDamage(damage)
+    getHealth = () => {
+        return this.hp;
+    }
+
+    setDamage(damage)
     {
         console.log(this.name, ', get damage:', damage);
         this.hp -= damage;
@@ -78,6 +89,7 @@ export default class Character
     }
     
     addSpells = (spell) => {
+        console.log(spell);
         this.spells.push(spell);
     }
 

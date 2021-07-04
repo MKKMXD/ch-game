@@ -1,8 +1,10 @@
 import {STATE_LOADING}  from '../Config/States.js';
-export default class FightManager
+import Manager from './Manager';
+
+export default class FightManager extends Manager
 {
-    constructor (parent)
-    {
+    constructor (parent) {
+        super(parent);
         this.state = STATE_LOADING;
         this.groups = {};
         this.fightState = false;
@@ -61,7 +63,7 @@ export default class FightManager
     fightCharacters(attackingUnit, attackedUnit)
     {
         //console.log("Fight START");
-        attackedUnit.getDamage(attackingUnit.attack());
+        attackedUnit.setDamage(attackingUnit.attack());
         //console.log(attackingUnit, attackedUnit);
         //console.log("Fight END");
     }

@@ -1,7 +1,9 @@
 import KeyManager from './KeyManager';
 import FightManager from './FightManager';
+import SpellManager from './SpellManager';
 const Manager = {
     KeyManager,
-    FightManager
+    FightManager,
+    SpellManager
 };
 export default Manager;

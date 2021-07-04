@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import Managers  from './Managers/';
 import Containers  from './Containers/';
 import Models  from './Models/';
+import {Spells}  from './Spells/index.js';
 import {STATE_LOADING}  from './Config/States.js';
 
 class MyGame extends Phaser.Scene
@@ -11,7 +12,9 @@ class MyGame extends Phaser.Scene
         super();
         this.keyManager = new Managers.KeyManager(game);
         this.fightManager = new Managers.FightManager(game);
+        this.spellManager = new Managers.SpellManager(game);
         this.keyManager.setState(STATE_LOADING);
+        this.spellManager.setState(STATE_LOADING);
         this.containers = {
             Arena: new Containers.Arena(this, 0, 0),
             Characters: [
@@ -54,7 +57,9 @@ class MyGame extends Phaser.Scene
         for (const iterator of this.containers.Characters) {
             this.containers.Arena.addElement(iterator.getModel());
             this.fightManager.addToGroup(iterator, "my_team");
+            this.spellManager.addTarget(iterator);
             iterator.setPosition(700, moveY);
+            iterator.addSpells(Spells.targetSpell);
             moveY += 50;
         }
 
@@ -62,6 +67,7 @@ class MyGame extends Phaser.Scene
         for (const iterator of this.containers.Enemies) {
             this.containers.Arena.addElement(iterator.getModel());
             this.fightManager.addToGroup(iterator, "enemy_team");
+            this.spellManager.addTarget(iterator);
             iterator.setPosition(400, moveY);
             moveY += 50;
         }
@@ -108,6 +114,7 @@ class MyGame extends Phaser.Scene
     {
         this.fightManager.startFight();
         this.fightManager.fight();
+        this.spellManager.cast();
     }
 }
 

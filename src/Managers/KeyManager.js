@@ -1,8 +1,10 @@
 import {STATE_LOADING}  from '../Config/States.js';
-export default class KeyManager
+import Manager from './Manager';
+
+export default class KeyManager extends Manager
 {
-    constructor (parent)
-    {
+    constructor (parent) {
+        super(parent);
         this.parent = parent
         this.state = STATE_LOADING;
         this.stateStatus = {
@@ -14,11 +16,6 @@ export default class KeyManager
                 13: true
             }
         }
-    }
-
-    setState(state) 
-    {
-        this.state = state;
     }
 
     checkButtonByState(keyCode) {
