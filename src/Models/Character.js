@@ -6,6 +6,7 @@ export default class Character
         this.name = "character";
         this.model = null;
         this.hp = 100;
+        this.hpText = null;
         this.statusAlive = true;
         this.modelFile = '';
         this.spells = [];
@@ -40,6 +41,7 @@ export default class Character
     {
         this.model.x = x;
         this.model.y = y;
+        this.hpText = this.scene.add.text(x + 10, y - this.model.height, this.hp, { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
     }
 
     getPosition()
@@ -63,14 +65,13 @@ export default class Character
     {
         let newX = Math.round(Math.random() * 500 - 50);
         let newY = Math.round(Math.random() * 5 + 100 - 50);
-        /*this.model.x = newX;
-        this.model.y = newY;*/
+        this.hpText.text = this.hp;
     }
 
     attack() 
     {
         let attack = Math.round(Math.random()*5 + 10 - 5);
-        console.log(this.name, ', attacked:', attack);
+        //console.log(this.name, ', attacked:', attack);
 
         return attack;
     }
@@ -81,7 +82,7 @@ export default class Character
 
     setDamage(damage)
     {
-        console.log(this.name, ', get damage:', damage);
+        //console.log(this.name, ', get damage:', damage);
         this.hp -= damage;
         if (this.hp <= 0) {
             this.statusAlive = false;

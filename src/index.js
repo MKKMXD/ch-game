@@ -37,7 +37,6 @@ class MyGame extends Phaser.Scene
     {
         this.keyManager.setState(STATE_LOADING);
         for (const iterator of this.containers.Characters) {
-            console.log(iterator.getUid());
             iterator.load();
         }
 
@@ -52,7 +51,7 @@ class MyGame extends Phaser.Scene
          * Register all Keyboard Events
          */
         this.containers.Arena.create();
-
+        this.logText = this.add.text(0, 0, "", { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
         let moveY = 50;
         for (const iterator of this.containers.Characters) {
             this.containers.Arena.addElement(iterator.getModel());
@@ -91,14 +90,25 @@ class MyGame extends Phaser.Scene
             iterator.update();
         }
 
+        for (const iterator of this.containers.Enemies) {
+            iterator.update();
+        }
+
         this.counter++
         
         let currentTime = new Date().getTime();
         if ( (currentTime -  this.startTime)/1000 > 1 ) {
-            console.log("FPS", this.counter);
+            //console.log("FPS", this.counter);
             this.startTime =  new Date().getTime();
             this.counter = 0;
         }
+
+        this.logText.setText([
+            'Name:',
+            'Level: ',
+            'Value: ',
+            'Owner: '
+        ]);
     }
 
     createEnemy()

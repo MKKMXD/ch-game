@@ -13,7 +13,7 @@ export default class SpellManager extends Manager
 
     addTarget = (character) => {
         this.targets[character.getUid()] = character;
-        console.log(this.targets);
+        //console.log(this.targets);
     }
 
     cast = () => {
@@ -21,7 +21,6 @@ export default class SpellManager extends Manager
             if (Object.hasOwnProperty.call(this.targets, key)) {
                 let characterCaster = this.targets[key];
                 let spells = characterCaster.getActiveSpells();
-                console.log(spells);
                 spells.forEach( spell => {
                     switch(spell.type) {
                         case SPELLS.AOE_SPELL: 
@@ -53,14 +52,19 @@ export default class SpellManager extends Manager
                     let targetPosition = characterCaster.getPosition()
                     let distanceToTarget = this.getDistance(targetPosition.x, targetPosition.y , position.x, position.y);
                     if (distance >= distanceToTarget) {
-                        avlbTargets[characterCaster.getHealth()] = characterCaster;
+                        avlbTargets[parseInt(characterCaster.getHealth())] = characterCaster;
                     }
                 }
             }
         }
-
-        let keysHealth = Object.keys(avlbTargets).sort();
+        let copy = Object.assign({}, avlbTargets);
+        console.log(copy)
+        let keysHealth = Object.keys(avlbTargets).sort(function(a, b) {
+            return a - b;
+        });
+        console.log(keysHealth);
         let targetCharacter = avlbTargets[keysHealth[0]];
+        console.log(targetCharacter.name, targetCharacter.getHealth());
         spell.use(targetCharacter);
         
         return targetCharacter;
