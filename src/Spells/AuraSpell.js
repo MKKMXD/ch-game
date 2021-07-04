@@ -2,7 +2,7 @@
 import {SPELLS} from './Spell';
 import Spell from './Spell';
 
-export default AuraSpell extends Spell 
+export default class AuraSpell extends Spell 
 {
     constructor() {
         super();
