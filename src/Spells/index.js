@@ -1,5 +1,7 @@
-import TargetSpell from './TargetSpell';
+import BattleHeal from './Target/BattleHeal';
+import IceBolt from './Target/IceBolt';
 
 export const Spells = {
-    targetSpell: new TargetSpell()
+    BattleHeal,
+    IceBolt
 };

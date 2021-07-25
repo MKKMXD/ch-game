@@ -30,6 +30,7 @@ class MyGame extends Phaser.Scene
         this.createEnemy();
         
         this.counter = 0;
+        this.dashboard = null;
         this.startTime = new Date().getTime();
     }
 
@@ -43,6 +44,8 @@ class MyGame extends Phaser.Scene
         for (const iterator of this.containers.Enemies) {
             iterator.load();
         }
+
+        
     }
       
     create ()
@@ -55,19 +58,24 @@ class MyGame extends Phaser.Scene
         let moveY = 50;
         for (const iterator of this.containers.Characters) {
             this.containers.Arena.addElement(iterator.getModel());
-            this.fightManager.addToGroup(iterator, "my_team");
+            iterator.setTeam("my_team");
+            this.fightManager.addToGroup(iterator, iterator.getTeam());
             this.spellManager.addTarget(iterator);
             iterator.setPosition(700, moveY);
-            iterator.addSpells(Spells.targetSpell);
+            iterator.addSpells(new Spells.BattleHeal());
+            iterator.addSpells(new Spells.IceBolt());
             moveY += 50;
         }
 
         moveY = 50;
         for (const iterator of this.containers.Enemies) {
             this.containers.Arena.addElement(iterator.getModel());
-            this.fightManager.addToGroup(iterator, "enemy_team");
+            
+            iterator.setTeam("enemy_team");
+            this.fightManager.addToGroup(iterator, iterator.getTeam());
             this.spellManager.addTarget(iterator);
             iterator.setPosition(400, moveY);
+            iterator.addSpells(new Spells.IceBolt());
             moveY += 50;
         }
 
@@ -81,6 +89,14 @@ class MyGame extends Phaser.Scene
                 this.fightManager.toogleFight();
             }
         });
+
+        /**
+         * Init Dashboard
+         */
+        
+        this.initSkillBoard();
+        //  var sprite = this.add.sprite(400, 300, 'phaser');
+        //  group.add(sprite);
     }
 
     update()
@@ -99,6 +115,7 @@ class MyGame extends Phaser.Scene
         let currentTime = new Date().getTime();
         if ( (currentTime -  this.startTime)/1000 > 1 ) {
             //console.log("FPS", this.counter);
+            this.dispatchActions();
             this.startTime =  new Date().getTime();
             this.counter = 0;
         }
@@ -114,9 +131,19 @@ class MyGame extends Phaser.Scene
     createEnemy()
     {
         for (let i = 0; i < 5; i++) {
-            let enemy_character = new Models.Character(this, 0, 0, 'tank');
-            enemy_character.setName(i.toString() + '_tank');
+            let enemy_character = new Models.Character(this, 0, 0, 'wave');
+            enemy_character.setName(i.toString() + '_wave');
             this.containers.Enemies.push(enemy_character);
+        }
+    }
+
+    removeUnits() 
+    {
+        for (const iterator of this.containers.Enemies) {
+            if (!iterator.getAliveStatus()) {
+                iterator.removeObject();
+                iterator = null;
+            }
         }
     }
 
@@ -125,7 +152,42 @@ class MyGame extends Phaser.Scene
         this.fightManager.startFight();
         this.fightManager.fight();
         this.spellManager.cast();
+        this.removeUnits(); 
     }
+
+    initSkillBoard = () => {
+        this.dashboard = this.add.container(400, 300);
+        this.dashboard.setSize(800, 600);
+        let counter = 1;
+        let y = 0;
+        let moveY = 20;
+        for (let prop in Spells) {
+            if( Spells.hasOwnProperty( prop ) ) {
+                let spell = new Spells[prop];
+                let spellNameText = this.add.text(0, counter * moveY + y, spell.getName(), { fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
+                spellNameText.setInteractive()/*.on('pointerdown', this.selectCurrentSkill)*/;
+                this.dashboard.add(spellNameText);
+                counter++;
+            }
+        }
+        /**
+            this.dashboard.setInteractive().on('pointerdown', function(pointer, localX, localY, event){
+                console.log(pointer);
+            });
+            this.dashboard.getAll.on('pointerdown', function(pointer, localX, localY, event){
+                console.log('aaa');
+            });
+        **/
+
+        this.input.on('gameobjectover', (pointer, gameObject) => {
+            console.log(this.dashboard.exists(gameObject));
+        });
+    }
+
+    selectCurrentSkill = (pointer, localX, localY, event) => {
+        alert('');  
+    }
+    
 }
 
 const config = {

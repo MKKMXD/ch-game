@@ -46,14 +46,35 @@ export default class FightManager extends Manager
                         keys.splice(index, 1);
                     }
 
+                    
+                    
                     group.forEach(characterAttacking => { 
+                        let targetAttacked = null;
+                        let avlbAttacked = [];
+
                         keys.forEach(keyEnemyGroup => {
                             let enemyGroup = this.groups[keyEnemyGroup];
+                            //@todo Сделать чтобы бил ближайшего
                             enemyGroup.forEach(characterAttacked => {
-                                this.fightCharacters(characterAttacking, characterAttacked);
+                                if (characterAttacked.getAliveStatus()) {
+                                    avlbAttacked.push(characterAttacked);
+                                }
+                                //this.fightCharacters(characterAttacking, characterAttacked);
                             });
                         });
+                        
+                        avlbAttacked = this.shuffleArray(avlbAttacked);
+                        if (avlbAttacked.length) {
+                            targetAttacked = avlbAttacked[0];
+                        }
+
+                        if (targetAttacked) {
+                            this.fightCharacters(characterAttacking, targetAttacked);
+                        }
                     });
+
+                    
+                    
                 }
             }
             this.endFight();
@@ -62,9 +83,15 @@ export default class FightManager extends Manager
 
     fightCharacters(attackingUnit, attackedUnit)
     {
-        //console.log("Fight START");
         attackedUnit.setDamage(attackingUnit.attack());
-        //console.log(attackingUnit, attackedUnit);
-        //console.log("Fight END");
+    }
+
+    shuffleArray(arrayVal) {
+        for (let i = arrayVal.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [arrayVal[i], arrayVal[j]] = [arrayVal[j], arrayVal[i]];
+        }
+
+        return arrayVal;
     }
 }

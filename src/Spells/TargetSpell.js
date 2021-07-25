@@ -7,10 +7,10 @@ export default class TargetSpell extends Spell
     constructor() {
         super();
         this.type = SPELLS.TARGET_SPELL;
+        this.caster = null;
     }
 
     use = (character) => {
-        console.log(character);
-        character.setDamage(-100);
+        character.setDamage(-60);
     }
 }
