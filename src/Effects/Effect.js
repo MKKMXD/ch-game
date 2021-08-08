@@ -9,6 +9,7 @@ export default class Effect {
     constructor(target) {
         this.target = target;
         this.type = EFFECT_TYPES.CONST
+        this.level = 1;
     }
 
     up = () => {

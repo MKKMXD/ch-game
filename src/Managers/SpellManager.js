@@ -24,6 +24,8 @@ export default class SpellManager extends Manager
                 let spells = characterCaster.getActiveSpells();
                 if (spells.length) {
                     try { 
+                        let counterUsed = 0;
+                        let maxCounterByStep = 1;
                         spells.forEach( spell => {
                             spell.updateCooldown();
                             if (spell.isCanCast()) {
@@ -31,6 +33,7 @@ export default class SpellManager extends Manager
                                     case SPELLS.AOE_SPELL: 
                                         break;
                                     case SPELLS.AURA_SPELL:
+                                        this.activateAura(spell, characterCaster.getUid(), characterCaster.getPosition());
                                         break;
                                     case SPELLS.CHAIN_SPELL:
                                         break;
@@ -39,10 +42,13 @@ export default class SpellManager extends Manager
                                     case SPELLS.SELF_SPELL:
                                         break;
                                     case SPELLS.TARGET_SPELL:
-                                        this.castTarget(spell, characterCaster.getUid(), characterCaster.getPosition());
+                                        counterUsed++;
+                                        if ( counterUsed == maxCounterByStep ) {
+                                            this.castTarget(spell, characterCaster.getUid(), characterCaster.getPosition());
+                                            //throw new Error("Spell has been casted");
+                                        }
                                         break;
                                 }
-                                throw new Error("Spell has been casted");
                             }
                         })
                     } catch (error) {

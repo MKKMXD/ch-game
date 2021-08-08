@@ -19,6 +19,9 @@ export default class Character
         this.str = 10;
         this.agl = 10;
 
+        this.level = 1;
+        this.hpRegen = 1;
+
         this.team = null;
 
         this.modelFile = '';
@@ -60,6 +63,14 @@ export default class Character
         }
 
         this.uid = this.generateUUID();
+    }
+
+    /**
+     * Regen, effects
+     */
+    lifeCycle = () => {
+        let hp = this.getHpRegen();
+        this.addHealth(hp);
     }
 
     setTeam = (val) => {
@@ -186,6 +197,15 @@ export default class Character
         }
 
         return this.hp;
+    }
+
+    setHpRegen = (val) => {
+        this.hpRegen = val;
+        return this.hpRegen;
+    }
+
+    getHpRegen = () => {
+        return this.hpRegen;
     }
 
     subtractMana = (val) => {
