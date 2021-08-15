@@ -2,8 +2,8 @@ import TargetSpell from "../TargetSpell";
 
 export default class BattleHeal extends TargetSpell {
 
-    constructor() {
-        super();
+    constructor(scene) {
+        super(scene);
         this.powerProc = 5;
         this.power = 20;
         this.typeTarget = "ally"
@@ -22,6 +22,7 @@ export default class BattleHeal extends TargetSpell {
     use = (character) => {
         this.runCurrentCooldown();
         let powerHeal = this.calculatePower(); 
+        this.getCaster().subtractMana(this.cost);
         //console.log(this.getCaster().getName(), "-> cast heal to ->", character.getName(), "-> with power ->", powerHeal);
         character.addHealth(powerHeal);
     }

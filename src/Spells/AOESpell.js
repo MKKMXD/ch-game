@@ -4,8 +4,8 @@ import Spell from './Spell';
 
 export default class AOESpell extends Spell 
 {
-    constructor() {
-        super();
+    constructor(scene) {
+        super(scene);
         this.type = SPELLS.AOE_SPELL;
     }
 }

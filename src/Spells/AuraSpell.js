@@ -4,8 +4,13 @@ import Spell from './Spell';
 
 export default class AuraSpell extends Spell 
 {
-    constructor() {
-        super();
+    constructor(scene) {
+        super(scene);
         this.type = SPELLS.AURA_SPELL;
+        this.currentCooldown = 0;
+    }
+
+    clearAll = () => {
+        
     }
 }

@@ -2,10 +2,10 @@
 import {SPELLS} from './Spell';
 import Spell from './Spell';
 
-export default PassiveSpell extends Spell 
+export default class PassiveSpell extends Spell 
 {
-    constructor() {
-        super();
+    constructor(scene) {
+        super(scene);
         this.type = SPELLS.PASSIVE_SPELL;
     }
 }

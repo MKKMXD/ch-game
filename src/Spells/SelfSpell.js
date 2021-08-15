@@ -2,10 +2,10 @@
 import {SPELLS} from './Spell';
 import Spell from './Spell';
 
-export default SelfSpell extends Spell 
+export default class SelfSpell extends Spell 
 {
-    constructor() {
-        super();
+    constructor(scene) {
+        super(scene);
         this.type = SPELLS.SELF_SPELL;
     }
 }

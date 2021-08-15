@@ -1,4 +1,4 @@
-
+import Phaser from "phaser"
 export const SPELLS = {
     TARGET_SPELL: "target",
     AOE_SPELL: "aoe",
@@ -7,18 +7,22 @@ export const SPELLS = {
     SELF_SPELL: "self",
     PASSIVE_SPELL: "passive",
 }
-
-export default class Spell {
-    constructor() {
+//@todo extend Container for view by list
+export default class Spell extends Phaser.GameObjects.Container {
+    constructor(scene) {
+        super(scene)
         this.type_resource = true;
         this.cost = 10;
-        this.distanceCast = 600;
+        this.distanceCast = 200;
         this.level = 1;
         this.caster = null;
         this.typeTarget = "any";
         this.cooldown = 5;
         this.currentCooldown = 0;
         this.name = "";
+        this.icoPath = "src/assets/Icons/Spells/BlessedMending.png"
+        this.ico = null;
+        this.ico_name = "power_regen"
     }
 
     getName = () => {
@@ -37,6 +41,10 @@ export default class Spell {
         let isCan = !this.currentCooldown;
         //console.log(isCan);
         return isCan;
+    }
+
+    getCost = () => {
+        return this.cost
     }
 
     updateCooldown = () => {
@@ -65,5 +73,13 @@ export default class Spell {
 
     getTypeTarget = () => {
         return this.typeTarget;
+    }
+
+    load = (scene) => {
+        scene.load.image(this.ico_name, this.icoPath);
+    }
+
+    addToScene = (scene, x, y) => {
+        this.ico = scene.add.sprite(x, y, this.ico_name);
     }
 }

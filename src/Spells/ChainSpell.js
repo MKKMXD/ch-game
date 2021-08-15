@@ -2,10 +2,10 @@
 import {SPELLS} from './Spell';
 import Spell from './Spell';
 
-export default ChainSpell extends Spell 
+export default class ChainSpell extends Spell 
 {
-    constructor() {
-        super();
+    constructor(scene) {
+        super(scene);
         this.type = SPELLS.CHAIN_SPELL;
     }
 }

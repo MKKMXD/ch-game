@@ -6,20 +6,21 @@ export default class RegenEffect extends Effect{
      */
     constructor(target) {
         /**@class Character */
-        this.target = target;
-        this.type = EFFECT_TYPES.CONST
+        super(target);
+        this.name = 'RegenEffect';
     }
 
-    up = () => {
+    up = (character) => {
+        this.target = character;
         let hpRegen = this.target.getHpRegen();
-        hpRegen += this.level*10;
+        hpRegen += this.level*2;
         this.target.setHpRegen(hpRegen);
     }
 
-    down = () => {
+    down = (character) => {
+        this.target = character;
         let hpRegen = this.target.getHpRegen();
-        hpRegen -= this.level*10;
+        hpRegen -= this.level*2;
         this.target.setHpRegen(hpRegen);
     }
-
 }

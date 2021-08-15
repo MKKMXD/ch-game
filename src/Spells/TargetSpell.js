@@ -4,8 +4,8 @@ import Spell from './Spell';
 
 export default class TargetSpell extends Spell 
 {
-    constructor() {
-        super();
+    constructor(scene) {
+        super(scene);
         this.type = SPELLS.TARGET_SPELL;
         this.caster = null;
     }

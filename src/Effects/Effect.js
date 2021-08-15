@@ -10,6 +10,7 @@ export default class Effect {
         this.target = target;
         this.type = EFFECT_TYPES.CONST
         this.level = 1;
+        this.name = 'effect';
     }
 
     up = () => {
@@ -18,6 +19,10 @@ export default class Effect {
 
     down = () => {
 
+    }
+
+    setLevel = (level) => {
+        this.level = level;
     }
 
 }

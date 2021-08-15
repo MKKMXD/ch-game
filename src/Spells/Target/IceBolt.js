@@ -2,8 +2,8 @@ import TargetSpell from "../TargetSpell";
 
 export default class IceBolt extends TargetSpell {
 
-    constructor() {
-        super();
+    constructor(scene) {
+        super(scene);
         this.powerProc = 5;
         this.power = 10;
         this.typeTarget = "enemy"
