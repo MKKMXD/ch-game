@@ -22,7 +22,7 @@ export default class SpellManager extends Manager
             if (Object.hasOwnProperty.call(this.targets, key)) {
                 let characterCaster = this.targets[key];
                 //if (!characterCaster.getAliveStatus()) continue;
-                if (characterCaster.getState() != CHARACTER_STATES.FIGHT) continue;
+                if (characterCaster.getState() != CHARACTER_STATES.FIGHT && characterCaster.getState() != CHARACTER_STATES.WAIT) continue;
                 
                 let spells = characterCaster.getActiveSpells();
                 if (spells.length) {
@@ -41,6 +41,7 @@ export default class SpellManager extends Manager
                                     case SPELLS.CHAIN_SPELL:
                                         break;
                                     case SPELLS.PASSIVE_SPELL:
+                                        this.activatePassive(spell, characterCaster)
                                         break;
                                     case SPELLS.SELF_SPELL:
                                         break;
@@ -138,6 +139,12 @@ export default class SpellManager extends Manager
                     spell.use(avlbTargets[key]);
                 }
             }
+        }
+    }
+
+    activatePassive = (spell, caster) => {
+        if (caster.getAliveStatus()) {
+            spell.use(caster);
         }
     }
 }

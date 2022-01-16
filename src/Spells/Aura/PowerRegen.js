@@ -29,7 +29,10 @@ export default class PowerRegen extends AuraSpell {
 
     use = (character) => {
         this.effect.setLevel(this.level);
-        this.targets[character.getUid()] = character;
-        character.addEffect(this.effect);
+        let addedEffect = character.addEffect(this.effect);
+
+        if (addedEffect) {
+            this.targets[character.getUid()] = character;
+        }
     }
 }

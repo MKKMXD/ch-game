@@ -1,6 +1,7 @@
 import {STATE_LOADING, STATE_FIGHT}  from '../Config/States.js';
 import { CHARACTER_STATES } from '../Models/Character.js';
 import Manager from './Manager';
+import Log from '../Helpers/Log.js'
 
 export default class FightManager extends Manager
 {
@@ -56,7 +57,7 @@ export default class FightManager extends Manager
                     }
                     
                     group.forEach(characterAttacking => {
-                        if (characterAttacking.getState() == CHARACTER_STATES.FIGHT) {
+                        if (characterAttacking.getState() == CHARACTER_STATES.FIGHT && characterAttacking.getAliveStatus()) {
                             let targetAttacked = null;
                             let avlbAttacked = [];
 
@@ -97,10 +98,15 @@ export default class FightManager extends Manager
 
     fightCharacters(attackingUnit, attackedUnit)
     {
+       
         let attackRange = attackingUnit.checkAttackRange(attackedUnit);
         if ( attackRange < 50 ) {
             attackingUnit.setTargetAttack(attackedUnit);
-            attackedUnit.setDamage(attackingUnit.attack());
+            const damage = attackingUnit.attack();
+            const attackingNameUnit = attackingUnit.getName();
+            const attackedNameUnit = attackedUnit.getName();
+            Log.add(attackingNameUnit + " -> " + damage + " -> " + attackedNameUnit);
+            attackedUnit.setDamage(damage);
         } else {
             if (!attackingUnit.getTargetPoint()) {
                 attackingUnit.setTargetPoint(attackedUnit);

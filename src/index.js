@@ -4,6 +4,7 @@ import Managers  from './Managers/';
 import Containers  from './Containers/';
 import Models  from './Models/';
 import {Spells}  from './Spells/index.js';
+import Log from './Helpers/Log.js'
 import {STATE_LOADING, STATE_FIGHT}  from './Config/States.js';
 import CharacterSkillPanel from "./Panels/CharacterSkillPanel"
 import { constant } from 'async';
@@ -24,7 +25,7 @@ class MyGame extends Phaser.Scene
             [0, 0, 0, 0, 0, 0, 0, 0],
         ]
         this.easystar = new EasyStar.js();
-        
+        Log.scene = this;
         this.counter = 0;
         this.dashboard = null;
         this.charactersGroup = null;
@@ -88,8 +89,6 @@ class MyGame extends Phaser.Scene
         this.skillPanel = new CharacterSkillPanel(this, 200, 200);
         this.skillPanel.visible = true;
         this.containers.Arena.addElement(this.skillPanel);
-        //  var sprite = this.add.sprite(400, 300, 'phaser');
-        //  group.add(sprite);
     }
 
     update = () => {
@@ -235,6 +234,7 @@ class MyGame extends Phaser.Scene
     removeUnits = () => {
         for (const iterator of this.containers.Enemies) {
             if (!iterator.getAliveStatus()) {
+                this.containers.Arena.removeElement(iterator);
                 iterator.removeObject();
                 iterator = null;
             }
@@ -242,6 +242,7 @@ class MyGame extends Phaser.Scene
 
         for (const iterator of this.containers.Characters) {
             if (!iterator.getAliveStatus()) {
+                this.containers.Arena.removeElement(iterator);
                 iterator.removeObject();
                 iterator = null;
             }

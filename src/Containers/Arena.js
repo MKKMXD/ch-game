@@ -28,6 +28,10 @@ export default class Arena {
         this.container.sendToBack(this.mapContainer);
     }
 
+    removeElement = (element) => {
+        this.container.remove(element);
+    }
+
     getContainer = () => {
         return this.container;
     }

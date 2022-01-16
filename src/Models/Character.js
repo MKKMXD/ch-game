@@ -44,6 +44,7 @@ export default class Character extends Phaser.GameObjects.Container
         this.modelFileFightSpriteSheet = '';
         this.spells = [];
         this.effects = {};//up //down, as migration
+        this.modifiersAttack = {};//up //down, as migration
         this.currentPath = [];
 
         this.pathBlockCounter = 2;
@@ -150,8 +151,13 @@ export default class Character extends Phaser.GameObjects.Container
     }
 
     addEffect = (effect) => {
-        this.effects[effect.name] = effect;
-        effect.up(this);
+        if (!this.effects[effect.name]) {
+            this.effects[effect.name] = effect;
+            effect.up(this);
+            return true;
+        }
+
+        return false;
     }
 
     removeEffect = (effect) => {
@@ -166,12 +172,26 @@ export default class Character extends Phaser.GameObjects.Container
         }
     }
 
+    addModifierAttack = (modify) => {
+        this.modifiersAttack[modify.name] = modify;
+    }
+
+    removeModifierAttack = (modifier) => {
+        try {
+            let modifierAttack = this.modifiersAttack[modifier.name];
+            if (modifierAttack) {
+                this.effects[modifierAttack.name] = null;
+            }   
+        } catch (e) {
+            //Do nothing
+        }
+    }
+
     /**
      * Regen, effects
      */
     lifeCycle = () => {
         this.regeneration();
-        
     }
 
     moveTo = () => {
@@ -412,6 +432,12 @@ export default class Character extends Phaser.GameObjects.Container
     attack = () => {
         if(this.currentState == CHARACTER_STATES.FIGHT) {
             let attack = Math.round(Math.random() * this.str + 2);
+            for (const key in this.modifiersAttack) {
+                if (Object.hasOwnProperty.call(this.modifiersAttack, key)) {
+                    const element = this.modifiersAttack[key];
+                    attack = element.modify(attack);
+                }
+            }
             if (this.statusAlive) {
                 return attack;
             }
@@ -521,6 +547,7 @@ export default class Character extends Phaser.GameObjects.Container
     
     addSpells = (spell) => {
         spell.setCaster(this);
+        spell.setName(spell.name + this.spells.length);
         this.spells.push(spell);
     }
 
