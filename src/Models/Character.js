@@ -94,7 +94,7 @@ export default class Character extends Phaser.GameObjects.Container
 
         if (type == "killer") {
             this.setStr(30);
-            this.setHealth(500)
+            this.setHealth(200)
         }
 
         this.uid = this.generateUUID();

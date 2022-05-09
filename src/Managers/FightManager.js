@@ -10,6 +10,7 @@ export default class FightManager extends Manager
         this.state = STATE_LOADING;
         this.groups = {};
         this.fightState = false;
+        this.panel = null;
     }
 
     addToGroup(character, group_name) 
@@ -107,9 +108,24 @@ export default class FightManager extends Manager
             const attackedNameUnit = attackedUnit.getName();
             Log.add(attackingNameUnit + " -> " + damage + " -> " + attackedNameUnit);
             attackedUnit.setDamage(damage);
+
+            this.addExperience(attackedUnit);
         } else {
             if (!attackingUnit.getTargetPoint()) {
                 attackingUnit.setTargetPoint(attackedUnit);
+            }
+        }
+    }
+
+    addExperience(attackedUnit)
+    {
+        if (!attackedUnit.getAliveStatus()) {
+            this.panel.addValue('exp', 15);
+            let expValue = this.panel.getValue('exp');
+            if (expValue > 50) {
+                this.panel.addValue('points', 1);
+                expValue -= 50;
+                this.panel.setValue('exp', expValue);
             }
         }
     }

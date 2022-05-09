@@ -1,7 +1,13 @@
 export default class Modifier {
-    constructor() {
+
+    /**
+     * 
+     * @param {Modifier} modifier 
+     */
+    constructor(modifier) {
         this.level = 1;
         this.name = 'Modifier';
+        this.modifier = modifier;
     }
 
     setLevel = (value) => {
@@ -16,8 +22,8 @@ export default class Modifier {
 
     }
 
-    modify = () => {
-
+    modify = (value) => {
+        
     }
 
 }

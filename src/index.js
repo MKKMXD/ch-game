@@ -7,8 +7,10 @@ import {Spells}  from './Spells/index.js';
 import Log from './Helpers/Log.js'
 import {STATE_LOADING, STATE_FIGHT}  from './Config/States.js';
 import CharacterSkillPanel from "./Panels/CharacterSkillPanel"
+import GameInfoPanel from "./Panels/GameInfoPanel"
 import { constant } from 'async';
 import { CHARACTER_STATES } from './Models/Character';
+import StateObservable from './Observables/StateObservable';
 
 class MyGame extends Phaser.Scene
 {
@@ -33,35 +35,44 @@ class MyGame extends Phaser.Scene
         this.startTimeSec = new Date().getTime();
         this.currentState = STATE_LOADING
         this.selectedHero = null;
+        this.gameInfoPanel = null;
     }
 
     setState = (state) => {
         this.currentState = state;
-        this.keyManager.setState(state);
-        this.spellManager.setState(state);
-        this.fightManager.setState(state)
+        this.stateObservable.updateState(state);
     }
 
     preload ()
     {
+        this.stateObservable = new StateObservable();
+        this.keyManager = new Managers.KeyManager(game, this);
+        this.stateObservable.addObserver(this.keyManager);
+        this.fightManager = new Managers.FightManager(game, this);
+        this.stateObservable.addObserver(this.fightManager);
+        this.spellManager = new Managers.SpellManager(game, this);
+        this.stateObservable.addObserver(this.spellManager);
+        this.personageManager = new Managers.PersonageManager(game, this);
+        this.stateObservable.addObserver(this.personageManager);
         
-        this.keyManager = new Managers.KeyManager(game);
-        this.fightManager = new Managers.FightManager(game);
-        this.spellManager = new Managers.SpellManager(game);
         this.setState(STATE_LOADING);
-
         this.containers = {
             Arena: new Containers.Arena(this, 0, 0),
             Characters: [
-                new Models.Character(this, 0, 0, 'tank'),
-                new Models.Character(this, 0, 0, 'mage'),
-                new Models.Character(this, 0, 0, 'killer')
+                this.personageManager.create('tank'),
+                this.personageManager.create('mage'),
+                this.personageManager.create('killer'),
             ],
             Enemies: [
 
             ]
         };
-        this.createEnemy();
+
+        for (let i = 0; i < 5; i++) {
+            let enemy_character = this.personageManager.create('wave', i.toString() + '_wave');
+            enemy_character.setName(i.toString() + '_wave');
+            this.containers.Enemies.push(enemy_character);
+        }
 
         this.initGame();
 
@@ -74,12 +85,6 @@ class MyGame extends Phaser.Scene
          */
         this.createPlayers();
 
-        /**
-         * Init Dashboard
-         */
-        
-        this.initSkillBoard();
-
         this.containers.Arena.setPosition(100, 100);
         this.containers.Arena.fillMap();
         /**
@@ -89,6 +94,18 @@ class MyGame extends Phaser.Scene
         this.skillPanel = new CharacterSkillPanel(this, 200, 200);
         this.skillPanel.visible = true;
         this.containers.Arena.addElement(this.skillPanel);
+
+        this.gameInfoPanel = new GameInfoPanel(this, 200, 0);
+        this.gameInfoPanel.visible = true;
+        this.add.container(this.gameInfoPanel.x, this.gameInfoPanel.y, this.gameInfoPanel);
+        this.fightManager.setPanel(this.gameInfoPanel);
+        /**
+         * Init Dashboard
+         */
+        
+        this.initSkillBoard();
+        this.initGameInfo();
+        this.startWave();
     }
 
     update = () => {
@@ -104,7 +121,7 @@ class MyGame extends Phaser.Scene
         this.counter++
         
         let currentTime = new Date().getTime();
-        if ( (currentTime -  this.startTime)/1000 > 1 ) {
+        if ((currentTime -  this.startTime) / 1000 > 1) {
             if (this.currentState == STATE_FIGHT) {
                 this.lifeCycle();
                 this.dispatchActions();
@@ -113,7 +130,7 @@ class MyGame extends Phaser.Scene
             this.counter = 0;
         }
 
-        if ( (currentTime -  this.startTimeSec)/1000 > 0.1 ) {
+        if ((currentTime -  this.startTimeSec)/1000 > 0.1) {
             this.moveTo();
             this.startTimeSec =  new Date().getTime();
         }
@@ -201,17 +218,6 @@ class MyGame extends Phaser.Scene
             moveY += 50;
         }
 
-        moveY = 50;
-        for (const iterator of this.containers.Enemies) {
-            iterator.getModel()
-            this.containers.Arena.addElement(iterator);
-            iterator.setPositionLegacy(0, 0);
-            iterator.setPosition(100, moveY);
-            iterator.setSize(19, 30);
-            iterator.setInteractive();
-            moveY += 50;
-        }
-
         this.input.keyboard.on('keyup', (event) =>  {
             if (this.keyManager.checkButtonByState(event.keyCode)) {
                 this.setState(STATE_FIGHT);
@@ -224,11 +230,55 @@ class MyGame extends Phaser.Scene
     }
 
     createEnemy = () => {
-        for (let i = 0; i < 5; i++) {
-            let enemy_character = new Models.Character(this, 0, 0, 'wave', i.toString() + '_wave');
-            enemy_character.setName(i.toString() + '_wave');
-            this.containers.Enemies.push(enemy_character);
+        let mapCreate = [
+            [0, 0, 0, 0],
+            [0, 1, 0, 0,],
+            [0, 1, 0, 0,],
+            [0, 1, 0, 0,],
+            [0, 1, 0, 0,],
+            [0, 1, 0, 0,],
+            [0, 0, 0, 0,],
+        ];
+        
+        for (const iterator of this.containers.Enemies) {
+            iterator.getModel()
+            this.containers.Arena.addElement(iterator);
+            iterator.setPositionLegacy(0, 0);
+            const resultPlace = this.findPlace(mapCreate);
+            mapCreate = resultPlace.newMap;
+            let point = resultPlace.point;
+            iterator.setPosition(point.x * 30, point.y * 30);
+            iterator.setSize(19, 30);
+            iterator.setInteractive();
         }
+    }
+
+    findPlace = (enemyMap) => {
+        let result = {
+            newMap: enemyMap,
+            point: {
+                x: 0,
+                y: 0,
+            },
+        }
+
+        for (let i = enemyMap.length - 1; i >= 0; i--) {
+            for (let j = enemyMap[i].length - 1; j >= 0; j--) {
+                if (enemyMap[i][j] == 1) {
+                    enemyMap[i][j] = 0;
+                    result.newMap = enemyMap;
+                    result.point.x = j;
+                    result.point.y = i;
+                    return result;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    startWave = (level) => {
+        this.createEnemy();
     }
 
     removeUnits = () => {
@@ -251,9 +301,13 @@ class MyGame extends Phaser.Scene
 
     dispatchActions = () => {
         this.fightManager.startFight();
-        this.fightManager.fight();
         this.spellManager.cast();
+        this.fightManager.fight();
         this.removeUnits(); 
+    }
+
+    initGameInfo = () => {
+        //this.gameInfoPanel.addText("Hello");
     }
 
     initSkillBoard = () => {

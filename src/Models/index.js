@@ -1,6 +1,9 @@
 import Character from './Character';
+import Enemy from './Enemy';
 
 const Characters = {
-    Character
+    Character,
+    Enemy,
 };
+
 export default Characters;

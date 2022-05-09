@@ -28,7 +28,7 @@ export default class SpellManager extends Manager
                 if (spells.length) {
                     try { 
                         let counterUsed = 0;
-                        let maxCounterByStep = 1;
+                        let maxCounterByStep = 1;//move value to config
                         spells.forEach( spell => {
                             spell.updateCooldown();
                             if (spell.isCanCast()) {
